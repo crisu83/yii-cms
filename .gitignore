@@ -1,0 +1,4 @@
+.idea/*
+app/config/*Local.php
+app/runtime/*
+web/assets/*
