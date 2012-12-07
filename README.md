@@ -1,4 +1,4 @@
-yii-mcms
+yii-cms
 ========
 
-A modular content management system for the Yii PHP framework.
+A next-gen content management system for the Yii PHP framework.
