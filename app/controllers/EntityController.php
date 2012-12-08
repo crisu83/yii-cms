@@ -12,7 +12,7 @@ class EntityController extends Controller
         $values = array();
 
         if ($model instanceof Entity) {
-            foreach ($model->propertyValues as $value) {
+            foreach ($model->values as $value) {
                 $values[] = array(
                     'id' => $value->id,
                     'property' => $value->property->name,

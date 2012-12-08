@@ -106,24 +106,32 @@ class Entity extends ActiveRecord
         $criteria->addCondition('etp.entityTypeId = :entityTypeId');
         $criteria->params = array(':entityTypeId'=>$this->entityTypeId);
 
+        /** @var Property[] $properties */
         $properties = Property::model()->findAll($criteria);
 
-        $config = array();
         $elements = array();
+        $propertyNames = array();
+        $rules = new PropertyRuleSet();
 
-        $elements['name'] = array(
-           'type'=>'textfield',
-        );
+        $elements['name'] = array('type'=>'textfield');
+        $propertyNames[] = 'name';
+        $rules->addRule(array('name', 'required'));
 
         foreach ($properties as $property)
         {
+            $htmlOptions = isset($property->htmlOptions) ? $property->htmlOptions : array();
+            $htmlOptions['hint'] = $property->description;
+
             $elements[$property->name] = array(
-                'type'=>$property->inputType,
+                'type'=>$property->input,
+                'htmlOptions'=>$htmlOptions,
             );
+
+            $propertyNames[] = $property->name;
+            $rules->addPropertyRules($property);
         }
 
-        $config['elements'] = $elements;
-        $config['buttons'] = array(
+        $buttons = array(
             'submit'=>array(
                 'type'=>'primary',
                 'label'=>'Save',
@@ -132,11 +140,18 @@ class Entity extends ActiveRecord
                 'buttonType'=>'link',
                 'type'=>'link',
                 'label'=>'Cancel',
+                'url'=>Yii::app()->homeUrl,
             ),
         );
 
+        $config = array(
+            'elements'=>$elements,
+            'buttons'=>$buttons,
+        );
+
         $formModel = new EntityForm();
-        $formModel->initAttributes(array_keys($elements));
+        $formModel->setPropertyNames($propertyNames);
+        $formModel->setRules($rules->getRules());
         return new TbForm($config, $formModel);
     }
 

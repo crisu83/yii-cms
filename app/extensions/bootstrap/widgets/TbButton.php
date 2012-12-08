@@ -138,6 +138,12 @@ class TbButton extends CWidget
 		if ($this->disabled)
 			$classes[] = 'disabled';
 
+        if (!isset($this->url) && isset($this->htmlOptions['href']))
+        {
+            $this->url = $this->htmlOptions['href'];
+            unset($this->htmlOptions['href']);
+        }
+
 		if ($this->encodeLabel)
 			$this->label = CHtml::encode($this->label);
 

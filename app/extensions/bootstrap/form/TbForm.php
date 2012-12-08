@@ -23,11 +23,9 @@ class TbForm extends CForm {
             {
                 if($element->type==='hidden')
                     return '<div class="hidden">'.$element->render().'</div>';
-                else
-                    return $element->render();
             }
-            else
-                return $element->render();
+
+            return $element->render();
         }
         return '';
     }

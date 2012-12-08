@@ -1,25 +1,23 @@
 <?php
 
 /**
- * This is the model class for table "property".
+ * This is the model class for table "property_rule".
  *
- * The followings are the available columns in table 'property':
+ * The followings are the available columns in table 'property_rule':
  * @property string $id
- * @property string $name
- * @property string $description
- * @property string $input
- * @property array $htmlOptions
+ * @property string $propertyId
+ * @property string $validator
+ * @property array $validatorOptions
  *
  * The followings are the available model relations:
- * @property PropertyRule[] $rules
- * @property PropertyValue[] $values
+ * @property Property $property
  */
-class Property extends ActiveRecord
+class PropertyRule extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return Property the static model class
+	 * @return PropertyRule the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -31,7 +29,7 @@ class Property extends ActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'property';
+		return 'property_rule';
 	}
 
 	/**
@@ -42,11 +40,12 @@ class Property extends ActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, input', 'required'),
-			array('name, input', 'length', 'max'=>255),
+			array('propertyId, validator', 'required'),
+			array('propertyId', 'length', 'max'=>10),
+			array('validator', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name, description, input', 'safe', 'on'=>'search'),
+			array('id, propertyId, validator', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,9 +57,8 @@ class Property extends ActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-            'rules' => array(self::HAS_MANY, 'PropertyRule', 'propertyId'),
-            'values' => array(self::HAS_MANY, 'PropertyValue', 'propertyId'),
-        );
+			'property' => array(self::BELONGS_TO, 'Property', 'propertyId'),
+		);
 	}
 
 	/**
@@ -70,10 +68,9 @@ class Property extends ActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'name' => 'Name',
-			'description' => 'Description',
-			'input' => 'Input',
-			'htmlOptions' => 'HTML options',
+			'propertyId' => 'Property',
+			'validator' => 'Validator',
+			'validatorOptions' => 'Validator options',
 		);
 	}
 
@@ -89,10 +86,8 @@ class Property extends ActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('propertyTypeId',$this->propertyTypeId);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('description',$this->description,true);
-		$criteria->compare('input',$this->input,true);
+		$criteria->compare('propertyId',$this->propertyId,true);
+		$criteria->compare('validator',$this->validator,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -103,31 +98,15 @@ class Property extends ActiveRecord
     {
         if (parent::beforeSave())
         {
-            if (isset($this->htmlOptions))
-                $this->htmlOptions = CJSON::encode($this->htmlOptions);
+            if (isset($this->validatorOptions))
+                $this->validatorOptions = CJSON::encode($this->validatorOptions);
         }
     }
 
     protected function afterFind()
     {
         parent::afterFind();
-        if (isset($this->htmlOptions))
-            $this->htmlOptions = CJSON::decode($this->htmlOptions);
-    }
-
-    public function buildRules()
-    {
-        $rules = array();
-        foreach ($this->rules as $rule)
-        {
-            $config = array($this->name, $rule->validator);
-            if (isset($rule->validatorOptions))
-            {
-                foreach ($rule->validatorOptions as $key => $value)
-                    $config[$key] = $value;
-            }
-            $rules[] = $config;
-        }
-        return $rules;
+        if (isset($this->validatorOptions))
+            $this->validatorOptions = CJSON::decode($this->validatorOptions);
     }
 }
