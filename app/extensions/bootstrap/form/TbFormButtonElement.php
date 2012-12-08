@@ -15,6 +15,5 @@ class TbFormButtonElement extends CFormButtonElement {
             'htmlOptions'=>$this->htmlOptions,
         ));
         return ob_get_clean();
-
     }
 }

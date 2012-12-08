@@ -3,9 +3,6 @@
 // Define the base path for the bootstrap extension.
 Yii::setPathOfAlias('bootstrap',__DIR__.'/../extensions/bootstrap');
 
-// Define namespaces.
-Yii::setPathOfAlias('cniska_yii_cms',__DIR__.'/..');
-
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
 $config = array(

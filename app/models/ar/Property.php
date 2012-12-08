@@ -5,7 +5,6 @@
  *
  * The followings are the available columns in table 'property':
  * @property string $id
- * @property string $propertyTypeId
  * @property string $name
  * @property string $inputType
  *
@@ -40,11 +39,11 @@ class Property extends ActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('propertyTypeId, name, inputType', 'required'),
+			array('name, inputType', 'required'),
 			array('name, inputType', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, propertyTypeId, name, inputType', 'safe', 'on'=>'search'),
+			array('id, name, inputType', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -67,29 +66,28 @@ class Property extends ActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'propertyTypeId' => 'Property type',
 			'name' => 'Name',
-			'inputType' => 'Input widget',
+			'inputType' => 'Input type',
 		);
 	}
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return \CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
 	public function search()
 	{
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
-		$criteria=new \CDbCriteria;
+		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('propertyTypeId',$this->propertyTypeId);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('inputType',$this->inputType,true);
 
-		return new \CActiveDataProvider($this, array(
+		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}

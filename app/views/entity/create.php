@@ -5,4 +5,4 @@
 
 <h1><?php echo 'Create '.$model->entityType->name; ?></h1>
 
-<?php echo $model->buildForm(); ?>
+<?php echo $model->buildForm()->render(); ?>
