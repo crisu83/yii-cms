@@ -7,7 +7,7 @@
  * @property string $id
  * @property string $propertyId
  * @property string $validator
- * @property array $validatorOptions
+ * @property array $validatorConfig
  *
  * The followings are the available model relations:
  * @property Property $property
@@ -70,7 +70,7 @@ class PropertyRule extends CActiveRecord
 			'id' => 'ID',
 			'propertyId' => 'Property',
 			'validator' => 'Validator',
-			'validatorOptions' => 'Validator options',
+			'validatorConfig' => 'Validator configuration',
 		);
 	}
 
@@ -98,15 +98,15 @@ class PropertyRule extends CActiveRecord
     {
         if (parent::beforeSave())
         {
-            if (isset($this->validatorOptions))
-                $this->validatorOptions = CJSON::encode($this->validatorOptions);
+            if (isset($this->validatorConfig) && is_array($this->validatorConfig))
+                $this->validatorConfig = CJSON::encode($this->validatorConfig);
         }
     }
 
     protected function afterFind()
     {
         parent::afterFind();
-        if (isset($this->validatorOptions))
-            $this->validatorOptions = CJSON::decode($this->validatorOptions);
+        if (isset($this->validatorConfig))
+            $this->validatorConfig = CJSON::decode($this->validatorConfig);
     }
 }

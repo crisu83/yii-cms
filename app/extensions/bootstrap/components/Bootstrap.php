@@ -62,7 +62,8 @@ class Bootstrap extends CApplicationComponent
 	 */
 	public function registerCoreCss()
 	{
-		Yii::app()->clientScript->registerCssFile($this->getAssetsUrl().'/css/bootstrap.css');
+		$filename = YII_DEBUG ? 'bootstrap.css' : 'bootstrap.min.css';
+		Yii::app()->clientScript->registerCssFile($this->getAssetsUrl().'/css/'.$filename);
 	}
 
 	/**
@@ -74,7 +75,8 @@ class Bootstrap extends CApplicationComponent
 		/** @var CClientScript $cs */
 		$cs = Yii::app()->getClientScript();
 		$cs->registerMetaTag('width=device-width, initial-scale=1.0', 'viewport');
-		$cs->registerCssFile($this->getAssetsUrl().'/css/bootstrap-responsive.css');
+		$filename = YII_DEBUG ? 'bootstrap-responsive.css' : 'bootstrap-responsive.min.css';
+		$cs->registerCssFile($this->getAssetsUrl().'/css/'.$filename);
 	}
 
 	/**
@@ -83,7 +85,7 @@ class Bootstrap extends CApplicationComponent
 	 */
 	public function registerYiiCss()
 	{
-		Yii::app()->clientScript->registerCssFile($this->getAssetsUrl().'/css/bootstrap-yii.css');
+		Yii::app()->clientScript->registerCssFile($this->getAssetsUrl().'/css/yii.css');
 	}
 
 	/**
@@ -93,8 +95,8 @@ class Bootstrap extends CApplicationComponent
 	public function registerCoreScripts()
 	{
 		$this->registerJS(Yii::app()->clientScript->coreScriptPosition);
-		$this->registerTooltip();
-		$this->registerPopover();
+		//$this->registerTooltip();
+		//$this->registerPopover();
 	}
 
 	/**
@@ -107,7 +109,8 @@ class Bootstrap extends CApplicationComponent
 		/** @var CClientScript $cs */
 		$cs = Yii::app()->getClientScript();
 		$cs->registerCoreScript('jquery');
-		$cs->registerScriptFile($this->getAssetsUrl().'/js/bootstrap.js', $position);
+		$filename = YII_DEBUG ? 'bootstrap.js' : 'bootstrap.min.js';
+		$cs->registerScriptFile($this->getAssetsUrl().'/js/'.$filename, $position);
 	}
 
 	/**

@@ -18,6 +18,7 @@ $config = array(
         'application.components.*',
         'application.models.ar.*',
         'application.models.form.*',
+        'ext.bootstrap.widgets.*',
     ),
 
     'modules'=>array(
@@ -49,6 +50,9 @@ $config = array(
             // use 'site/error' action to display errors
             'errorAction'=>'site/error',
         ),
+		'less'=>array(
+			'class'=>'ext.less.components.Less',
+		),
         'log'=>array(
             'class'=>'CLogRouter',
             'routes'=>array(

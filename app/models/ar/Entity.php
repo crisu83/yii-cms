@@ -7,13 +7,13 @@ Yii::import('bootstrap.form.TbForm');
  *
  * The followings are the available columns in table 'entity':
  * @property string $id
- * @property string $entityTypeId
+ * @property string $typeId
  * @property string $name
  *
  * The followings are the available model relations:
- * @property EntityType $entityType
- * @property Property $properties
- * @property PropertyValue[] $propertyValues
+ * @property Type $type
+ * @property Property[] $properties
+ * @property PropertyValue[] $values
  */
 class Entity extends ActiveRecord
 {
@@ -43,13 +43,13 @@ class Entity extends ActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('entityTypeId, name', 'required'),
-			array('entityTypeId', 'length', 'max'=>10),
+			array('typeId, name', 'required'),
+			array('typeId', 'length', 'max'=>10),
 			array('name', 'length', 'max'=>255),
             array('name', 'unique'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, entityTypeId, name', 'safe', 'on'=>'search'),
+			array('id, typeId, name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -61,9 +61,9 @@ class Entity extends ActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'entityType' => array(self::BELONGS_TO, 'EntityType', 'entityTypeId'),
-            'properties' => array(self::MANY_MANY, 'Property', 'entity_type_property(entityTypeId, propertyId)'),
-            'propertyValues' => array(self::HAS_MANY, 'PropertyValue', 'entityId'),
+			'type' => array(self::BELONGS_TO, 'Type', 'typeId'),
+            'properties' => array(self::MANY_MANY, 'Property', 'type_property(typeId, propertyId)'),
+            'values' => array(self::HAS_MANY, 'PropertyValue', 'entityId'),
 		);
 	}
 
@@ -74,9 +74,21 @@ class Entity extends ActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'entityTypeId' => 'Entity type',
+			'typeId' => 'Type',
 			'name' => 'Name',
 		);
+	}
+
+	public function typeOptions()
+	{
+		$options = array();
+
+		/** @var $types Type[] */
+		$types = Type::model()->findAll();
+		foreach ($types as $type)
+			$options[$type->name] = $type->getPrettyName();
+
+		return $options;
 	}
 
 	/**
@@ -91,69 +103,15 @@ class Entity extends ActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('entityTypeId',$this->entityTypeId);
+		$criteria->compare('type.name',$this->typeId, true);
 		$criteria->compare('name',$this->name,true);
+
+		$criteria->with[] = 'type';
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
-
-    public function buildForm()
-    {
-        $criteria = new CDbCriteria();
-        $criteria->join = 'INNER JOIN entity_type_property etp ON (t.id = etp.propertyId)';
-        $criteria->addCondition('etp.entityTypeId = :entityTypeId');
-        $criteria->params = array(':entityTypeId'=>$this->entityTypeId);
-
-        /** @var Property[] $properties */
-        $properties = Property::model()->findAll($criteria);
-
-        $elements = array();
-        $propertyNames = array();
-        $rules = new PropertyRuleSet();
-
-        $elements['name'] = array('type'=>'textfield');
-        $propertyNames[] = 'name';
-        $rules->addRule(array('name', 'required'));
-
-        foreach ($properties as $property)
-        {
-            $htmlOptions = isset($property->htmlOptions) ? $property->htmlOptions : array();
-            $htmlOptions['hint'] = $property->description;
-
-            $elements[$property->name] = array(
-                'type'=>$property->input,
-                'htmlOptions'=>$htmlOptions,
-            );
-
-            $propertyNames[] = $property->name;
-            $rules->addPropertyRules($property);
-        }
-
-        $buttons = array(
-            'submit'=>array(
-                'type'=>'primary',
-                'label'=>'Save',
-            ),
-            'cancel'=>array(
-                'buttonType'=>'link',
-                'type'=>'link',
-                'label'=>'Cancel',
-                'url'=>Yii::app()->homeUrl,
-            ),
-        );
-
-        $config = array(
-            'elements'=>$elements,
-            'buttons'=>$buttons,
-        );
-
-        $formModel = new EntityForm();
-        $formModel->setPropertyNames($propertyNames);
-        $formModel->setRules($rules->getRules());
-        return new TbForm($config, $formModel);
-    }
 
     public function getPrettyName()
     {

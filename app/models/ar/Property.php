@@ -16,6 +16,8 @@
  */
 class Property extends ActiveRecord
 {
+	public $inputWidget = 'bootstrap.widgets.TbInput';
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -77,6 +79,20 @@ class Property extends ActiveRecord
 		);
 	}
 
+	public function inputOptions()
+	{
+		return array(
+			'checkbox' => 'Checkbox',
+			'checkboxlist' => 'Checkbox list',
+			'dropdown' => 'Dropdown',
+			'file' => 'File',
+			'radiobutton' => 'Radio button',
+			'radiobuttonlist' => 'Radio button list',
+			'text' => 'Text',
+			'textarea' => 'Textarea',
+		);
+	}
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
@@ -89,7 +105,6 @@ class Property extends ActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('propertyTypeId',$this->propertyTypeId);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('description',$this->description,true);
 		$criteria->compare('input',$this->input,true);
@@ -103,7 +118,7 @@ class Property extends ActiveRecord
     {
         if (parent::beforeSave())
         {
-            if (isset($this->htmlOptions))
+            if (isset($this->htmlOptions) && is_array($this->htmlOptions))
                 $this->htmlOptions = CJSON::encode($this->htmlOptions);
         }
     }
@@ -121,9 +136,9 @@ class Property extends ActiveRecord
         foreach ($this->rules as $rule)
         {
             $config = array($this->name, $rule->validator);
-            if (isset($rule->validatorOptions))
+            if (isset($rule->validatorConfig))
             {
-                foreach ($rule->validatorOptions as $key => $value)
+                foreach ($rule->validatorConfig as $key => $value)
                     $config[$key] = $value;
             }
             $rules[] = $config;
